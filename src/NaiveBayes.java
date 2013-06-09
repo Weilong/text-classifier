@@ -51,7 +51,7 @@ public class NaiveBayes{
 	        		if (text.isFile()){
 	            		numClassCounter++;
 	            		Scanner s = new Scanner(text);
-	            		//s.useDelimiter("[\\s.]+");
+	            		
 	            		while(s.hasNext()){
 	            			numClassPositionCounter++;
 	            			nextString = s.next();
@@ -92,6 +92,7 @@ public class NaiveBayes{
 	    }
 		
 		String nextKey;
+		String nextKey2;
 		Iterator<String> it = vocabulary.keySet().iterator();
 		Iterator<String> it2;
 		/*
@@ -105,11 +106,23 @@ public class NaiveBayes{
 				it.remove();
 				it2 = wordProb.keySet().iterator();
 				while(it2.hasNext()){
-					wordProb.get(it2.next()).remove(nextKey);
+					nextKey2 = it2.next();
+					if (wordProb.get(nextKey2).get(nextKey)!=null)
+						numClassPosition.put(nextKey2, (int) (numClassPosition.get(nextKey2)-wordProb.get(nextKey2).get(nextKey)));
+					wordProb.get(nextKey2).remove(nextKey);
 				}
 			}
 		}
 		System.out.println(vocabulary.size());
+		
+		/*
+		 * Calculate the total number of text containing words in vocabulary
+		 */
+		it = vocabulary.keySet().iterator();
+		while(it.hasNext()){
+			nextKey = it.next();
+			
+		}
 		
 		/*
 		 * Calculate priors for each class
@@ -127,7 +140,6 @@ public class NaiveBayes{
 		 * M-estimate smoothing is used to avoid overfitting
 		 */
 		it = wordProb.keySet().iterator();
-		String nextKey2;
 		double tmpProb = 0;
 		
 		while(it.hasNext()){
@@ -208,7 +220,7 @@ public class NaiveBayes{
 		
 		while(it.hasNext()){
 			s = new Scanner(text);
-			//s.useDelimiter("[\\s.]+");
+			
 			String className = it.next();
 			posterior = classPriors.get(className)*1E200;
 			
