@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Scanner;
+import java.text.NumberFormat;
 
 public class NaiveBayes{
 	
@@ -51,11 +52,12 @@ public class NaiveBayes{
 	        		if (text.isFile()){
 	            		numClassCounter++;
 	            		Scanner s = new Scanner(text);
-	            		
+
 	            		while(s.hasNext()){
 	            			numClassPositionCounter++;
 	            			nextString = s.next();
-	            			nextString = nextString.replaceAll("[^a-zA-Z]", "");//System.out.println(nextString);
+	            			nextString = nextString.replaceAll("[^a-zA-Z]", "");
+	            			//System.out.println(nextString);
 	            			nextString = nextString.toLowerCase();
 	            			
 	            			if (!nextString.isEmpty() && vocabulary.get(nextString)==null){
@@ -167,6 +169,8 @@ public class NaiveBayes{
 		int totalCorrect = 0;
 		int classTest = 0;
 		int classCorrect = 0;
+		NumberFormat nf = NumberFormat.getPercentInstance();
+		nf.setMinimumFractionDigits(1);
 		
 		for (File classFolder : folder.listFiles()){
 			if (classFolder.isDirectory()){
@@ -185,13 +189,13 @@ public class NaiveBayes{
 					}
 				}
 				
-				System.out.println("Accuracy:"+(double)classCorrect/classTest);
+				System.out.println("Accuracy:"+nf.format((double)classCorrect/classTest));
 				classCorrect = 0;
 				classTest = 0;
 				
 			}
 		}
-		System.out.println("Total Accuracy:"+(double)totalCorrect/totalTest);
+		System.out.println("Total Accuracy:"+nf.format((double)totalCorrect/totalTest));
 		System.out.println("-----End testing-----");
 	}
 	
@@ -220,7 +224,7 @@ public class NaiveBayes{
 		
 		while(it.hasNext()){
 			s = new Scanner(text);
-			
+
 			String className = it.next();
 			posterior = classPriors.get(className)*1E200;
 			
