@@ -3,7 +3,7 @@
 
 To classify a document or documents in a folder, open program folder in terminal, type commmand:
 
-	./tc.sh argument1 argument2
+	./classify.sh argument1 argument2
 	
 where argument1 is the path to the folder containing training data, for example: 
 
@@ -23,7 +23,7 @@ The program will output the document name and its class.
 
 To test the program, open program folder in terminal, type command:
 
-	./nb.sh argument1 argument2
+	./test.sh argument1 argument2
 	
 where argument1 is the path to the folder containing training data, for example:
 
@@ -37,5 +37,5 @@ The program will output the accuracy of each class and an average accuracy for a
 
 If you encounter Denied Permission error, type the command:
 
-	chmod 777 tc.sh
-	chmod 777 nb.sh	
+	chmod 777 classify.sh
+	chmod 777 test.sh	
