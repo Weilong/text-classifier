@@ -30,8 +30,10 @@ public class NaiveBayes{
 		File folder = new File(trainFolder);
 	    int numClassCounter = 0;
 	    int numClassPositionCounter = 0;
+	    int numWordText = 0;
 	    int totalTexts = 0;
 	    String nextString;
+	    HashMap<String,Integer> textWords = new HashMap<String,Integer>();
 	    
 	    /*
 	     * Collect all the vocabulary, tokens, etc in the training example
@@ -49,12 +51,13 @@ public class NaiveBayes{
 	        		if (text.isFile()){
 	            		numClassCounter++;
 	            		Scanner s = new Scanner(text);
-	            		
+	            		//s.useDelimiter("[\\s.]+");
 	            		while(s.hasNext()){
 	            			numClassPositionCounter++;
 	            			nextString = s.next();
-	            			nextString = nextString.replaceAll("[^a-zA-Z]", "");
+	            			nextString = nextString.replaceAll("[^a-zA-Z]", "");//System.out.println(nextString);
 	            			nextString = nextString.toLowerCase();
+	            			
 	            			if (!nextString.isEmpty() && vocabulary.get(nextString)==null){
 	            				vocabulary.put(nextString, 1);
 	            			}
@@ -64,19 +67,27 @@ public class NaiveBayes{
 	            			
 	            			if (wordProb.get(classFolder.getName()).get(nextString) == null){
 	            				wordProb.get(classFolder.getName()).put(nextString, (double) 1);
+	            				numWordText++;
 	            			}
 	            			else{
-	            				wordProb.get(classFolder.getName()).put(nextString, wordProb.get(classFolder.getName()).get(nextString)+1);
+	            				if (textWords.get(nextString)==null){
+	            					wordProb.get(classFolder.getName()).put(nextString, wordProb.get(classFolder.getName()).get(nextString)+1);
+	            					numWordText++;
+	            				}
 	            			}
+	            			textWords.put(nextString,0);
 	            		}
-	            	}
+	            		textWords.clear();
+	            	}	
 	            }
 	        	
 	        	numClass.put(classFolder.getName(), numClassCounter);
 	        	totalTexts+=numClassCounter;
 	        	numClassCounter = 0;
-	        	numClassPosition.put(classFolder.getName(), numClassPositionCounter);
+	        	//numClassPosition.put(classFolder.getName(), numClassPositionCounter);
+	        	numClassPosition.put(classFolder.getName(), numWordText);
 	        	numClassPositionCounter = 0;
+	        	numWordText = 0;
 	        }
 	    }
 		
@@ -108,7 +119,7 @@ public class NaiveBayes{
 		while(it.hasNext()){
 			nextKey = it.next();
 			classPriors.put(nextKey, numClass.get(nextKey)/(double)totalTexts);
-			System.out.println(nextKey+":"+classPriors.get(nextKey));
+			//System.out.println(nextKey+":"+classPriors.get(nextKey));
 		}
 		
 		/*
@@ -141,7 +152,9 @@ public class NaiveBayes{
 		System.out.println("-----Start testing-----");
 		File folder = new File(testFolder);
 		int totalTest = 0;
-		int correct = 0;
+		int totalCorrect = 0;
+		int classTest = 0;
+		int classCorrect = 0;
 		
 		for (File classFolder : folder.listFiles()){
 			if (classFolder.isDirectory()){
@@ -151,21 +164,22 @@ public class NaiveBayes{
 				for (File text : classFolder.listFiles()){
 					if (text.isFile()){
 						totalTest++;
+						classTest++;
             		
             			if (calculateMAP(text).equals(classFolder.getName())){
-            				correct++;
+            				totalCorrect++;
+            				classCorrect++;
             			}
 					}
 				}
-				/*
-				System.out.println("correct:"+correct+" totalText:"+totalText);
-				System.out.println("Accuracy:"+(double)correct/totalText);
-				correct = 0;
-				totalText = 0;
-				*/
+				
+				System.out.println("Accuracy:"+(double)classCorrect/classTest);
+				classCorrect = 0;
+				classTest = 0;
+				
 			}
 		}
-		System.out.println("Accuracy:"+(double)correct/totalTest);
+		System.out.println("Total Accuracy:"+(double)totalCorrect/totalTest);
 		System.out.println("-----End testing-----");
 	}
 	
@@ -194,7 +208,7 @@ public class NaiveBayes{
 		
 		while(it.hasNext()){
 			s = new Scanner(text);
-			
+			//s.useDelimiter("[\\s.]+");
 			String className = it.next();
 			posterior = classPriors.get(className)*1E200;
 			
