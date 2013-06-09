@@ -6,13 +6,24 @@ import java.util.Iterator;
 import java.util.Scanner;
 import java.text.NumberFormat;
 
+/**
+ * COMP9417 Machine learning and data mining
+ * NaiveBayes.java
+ * Purpose: the main class of the program. receive the training fole and test folder
+ * and do the Naive Bayes algorithm on the given dataset. The program will print out 
+ * the accuracry for each class and an average accuracy will be printed out at the end.
+ *
+ * @author Weilong Ding
+ * @version 1.0 8/06/2013
+ */
+
 public class NaiveBayes{
 	
-	private HashMap<String, Integer> vocabulary;
-	private HashMap<String, Double> classPriors;
-	private HashMap<String, Integer> numClass;
-	private HashMap<String, Integer> numClassPosition;
-	private HashMap<String, HashMap<String, Double>> wordProb;
+	private HashMap<String, Integer> vocabulary;	//store all the vocabulary in the training set
+	private HashMap<String, Double> classPriors;	//store the prior probability of each class
+	private HashMap<String, Integer> numClass;		//store the number of documents of each class
+	private HashMap<String, Integer> numClassPosition;	
+	private HashMap<String, HashMap<String, Double>> wordProb;	//store the probability of word in each class
 	
 	public NaiveBayes() throws FileNotFoundException{
 		vocabulary = new HashMap<String, Integer>();
@@ -27,11 +38,11 @@ public class NaiveBayes{
 	 */
 	public void learn(String trainFolder) throws FileNotFoundException{
 		System.out.println("-----Start learning-----");
-	
+		
 		File folder = new File(trainFolder);
-	    int numClassCounter = 0;
-	    int numClassPositionCounter = 0;
-	    int numWordText = 0;
+	    int numClassCounter = 0; //track the number of documents for each class
+	    //int numClassPositionCounter = 0;
+	    int numWordText = 0;	//store the number of documents containing all the words
 	    int totalTexts = 0;
 	    String nextString;
 	    HashMap<String,Integer> textWords = new HashMap<String,Integer>();
@@ -54,10 +65,10 @@ public class NaiveBayes{
 	            		Scanner s = new Scanner(text);
 
 	            		while(s.hasNext()){
-	            			numClassPositionCounter++;
+	            			//numClassPositionCounter++;
 	            			nextString = s.next();
 	            			nextString = nextString.replaceAll("[^a-zA-Z]", "");
-	            			//System.out.println(nextString);
+	            			
 	            			nextString = nextString.toLowerCase();
 	            			
 	            			if (!nextString.isEmpty() && vocabulary.get(nextString)==null){
@@ -88,7 +99,7 @@ public class NaiveBayes{
 	        	numClassCounter = 0;
 	        	//numClassPosition.put(classFolder.getName(), numClassPositionCounter);
 	        	numClassPosition.put(classFolder.getName(), numWordText);
-	        	numClassPositionCounter = 0;
+	        	//numClassPositionCounter = 0;
 	        	numWordText = 0;
 	        }
 	    }
@@ -115,7 +126,7 @@ public class NaiveBayes{
 				}
 			}
 		}
-		System.out.println(vocabulary.size());
+		System.out.println("vocabulary size:" + vocabulary.size());
 		
 		/*
 		 * Calculate the total number of text containing words in vocabulary
@@ -161,7 +172,9 @@ public class NaiveBayes{
 		}
 		System.out.println("-----End learning-----");
 	}
-	
+	/*
+	 * test algorithm on a given dataset
+	 */
 	public void test(String testFolder) throws FileNotFoundException{
 		System.out.println("-----Start testing-----");
 		File folder = new File(testFolder);
@@ -198,7 +211,9 @@ public class NaiveBayes{
 		System.out.println("Total Accuracy:"+nf.format((double)totalCorrect/totalTest));
 		System.out.println("-----End testing-----");
 	}
-	
+	/*
+	 * classify a file or files in the given folder
+	 */
 	public void classify(String pathName) throws FileNotFoundException{
 		System.out.println("-----Start classifying-----");
 		File path = new File(pathName);
@@ -212,7 +227,9 @@ public class NaiveBayes{
 		}
 		System.out.println("-----End classifying-----");
 	}
-	
+	/*
+	 * calculate MAP for a given document
+	 */
 	private String calculateMAP(File text) throws FileNotFoundException{
 		Scanner s;
 		String nextString;
@@ -226,7 +243,7 @@ public class NaiveBayes{
 			s = new Scanner(text);
 
 			String className = it.next();
-			posterior = classPriors.get(className)*1E200;
+			posterior = 1E300;
 			
 			while(s.hasNext()){           			
     			nextString = s.next();
@@ -248,7 +265,9 @@ public class NaiveBayes{
 	
 	public static void main(String[] args) throws IOException{
 		NaiveBayes n = new NaiveBayes();
-		n.learn("20news-bydate/20news-bydate-train");
-		n.test("20news-bydate/20news-bydate-test");
+		n.learn(args[0]);
+		n.test(args[1]);
+		//n.learn("20news-bydate/20news-bydate-train");
+		//n.test("20news-bydate/20news-bydate-test");
 	}
 }
